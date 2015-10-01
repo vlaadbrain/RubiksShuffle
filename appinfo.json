@@ -15,14 +15,11 @@
             }
         ]
     },
-    "sdkVersion": "3",
-    "shortName": "Shuffiks",
-    "targetPlatforms": [
-        "aplite",
-        "basalt"
-    ],
+    "sdkVersion": "2",
+    "shortName": "Shuffle",
     "uuid": "71f8a99e-9281-43ae-8479-794910879271",
-    "versionLabel": "1.0",
+    "versionCode": 1,
+    "versionLabel": "1.2",
     "watchapp": {
         "watchface": false
     }

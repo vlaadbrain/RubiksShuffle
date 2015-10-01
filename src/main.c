@@ -113,11 +113,11 @@ static void click_config_provider(void *context) {
 
 static void main_window_load(Window *window) {
   s_rotations_bitmap = gbitmap_create_with_resource(RESOURCE_ID_ROTATIONS);
-  s_background_layer = bitmap_layer_create(GRect(44,68,100,100));
+  s_background_layer = bitmap_layer_create(GRect(44,53,100,100));
   bitmap_layer_set_alignment(s_background_layer, GAlignBottomRight);
   layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_background_layer));
   
-  s_move_name_layer = text_layer_create(GRect(0, 30, 72, 50));
+  s_move_name_layer = text_layer_create(GRect(0, 15, 72, 50));
   s_move_font = fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD);
   text_layer_set_background_color(s_move_name_layer, GColorBlack);
   text_layer_set_text_color(s_move_name_layer, GColorWhite);
@@ -130,7 +130,6 @@ static void main_window_load(Window *window) {
 
 static void main_window_unload(Window *window) {
   text_layer_destroy(s_move_name_layer);
-  fonts_unload_custom_font(s_move_font);
   
   if (s_rotation != NULL) {
    gbitmap_destroy(s_rotation); 
