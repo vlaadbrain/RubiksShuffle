@@ -1,0 +1,29 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "org.cjt",
+    "longName": "Shuffle Your Rubiks Cube",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/rotations-dithered.png",
+                "name": "ROTATIONS",
+                "type": "png"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "Shuffiks",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
+    "uuid": "71f8a99e-9281-43ae-8479-794910879271",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
