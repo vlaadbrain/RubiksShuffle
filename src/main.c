@@ -15,21 +15,22 @@
 
 #include <pebble.h>
   
+static const int16_t MOVES_AVAILABLE = 11;
+static const int16_t SUCCESSORS_AVAILABLE = 8;
+static const int16_t SUB_BITMAP_W = 100;
+static const int16_t SUB_BITMAP_H = 100;
+
 static Window *s_main_window;
 static TextLayer *s_move_name_layer;
 static GFont s_move_font;
 static BitmapLayer *s_background_layer;
 static GBitmap *s_rotations_bitmap;
 static GBitmap *s_rotation;
+
 static int16_t interval = 5;
 static int16_t interval_counter = 0;
 static int16_t current_move;
-
-static const int16_t MOVES_AVAILABLE = 11;
-static const int16_t SUCCESSORS_AVAILABLE = 8;
-static const int16_t SUB_BITMAP_W = 100;
-static const int16_t SUB_BITMAP_H = 100;
-
+static bool pause = false;
 
 typedef struct {
   const char key;
@@ -83,13 +84,40 @@ static void update_move() {
   interval_counter = interval;
 }
 
+static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
+  if (interval == 0) {
+    return;
+  } else {
+    interval--;
+  }
+  update_move();
+}
+
+static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
+  if (pause) {
+    pause = false;
+  } else {
+    pause = true;
+  }
+}
+
+static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
+  interval++;
+}
+
+static void click_config_provider(void *context) {
+  window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
+  window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
+  window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
+}
+
 static void main_window_load(Window *window) {
   s_rotations_bitmap = gbitmap_create_with_resource(RESOURCE_ID_ROTATIONS);
-  s_background_layer = bitmap_layer_create(GRect(0,0,144,168));
+  s_background_layer = bitmap_layer_create(GRect(44,68,100,100));
   bitmap_layer_set_alignment(s_background_layer, GAlignBottomRight);
   layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_background_layer));
   
-  s_move_name_layer = text_layer_create(GRect(0, 10, 139, 50));
+  s_move_name_layer = text_layer_create(GRect(0, 30, 72, 50));
   s_move_font = fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD);
   text_layer_set_background_color(s_move_name_layer, GColorBlack);
   text_layer_set_text_color(s_move_name_layer, GColorWhite);
@@ -113,6 +141,7 @@ static void main_window_unload(Window *window) {
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
+  if (pause) return;
   if (interval_counter <= 0) {
     update_move();
   } else {
@@ -128,6 +157,7 @@ static void init() {
     .load = main_window_load,
     .unload = main_window_unload
   });
+  window_set_click_config_provider(s_main_window, click_config_provider); 
   window_set_background_color(s_main_window, GColorBlack);
   window_stack_push(s_main_window, true);
   update_move();
