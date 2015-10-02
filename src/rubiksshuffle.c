@@ -15,7 +15,7 @@
 
 #include <pebble.h>
   
-static const int16_t MOVES_AVAILABLE = 11;
+static const int16_t MOVES_AVAILABLE = 12;
 static const int16_t SUCCESSORS_AVAILABLE = 8;
 static const int16_t SUB_BITMAP_W = 100;
 static const int16_t SUB_BITMAP_H = 100;
@@ -27,10 +27,16 @@ static BitmapLayer *s_background_layer;
 static GBitmap *s_rotations_bitmap;
 static GBitmap *s_rotation;
 
-static int16_t interval = 5;
+static int16_t interval = 1;
 static int16_t interval_counter = 0;
-static int16_t current_move;
 static bool pause = false;
+
+static int16_t current_move;
+
+typedef struct {
+  const char *level;
+  int16_t interval;
+} Speed;
 
 typedef struct {
   const char key;
@@ -55,6 +61,13 @@ static const Move moves[] = {
   { 'D', "D'",500, 100, {'f', 'F', 'b', 'B', 'l', 'L', 'r', 'R'}},
 };
 
+static const Speed speeds[] = {
+  { "Sprint"   , 0 },
+  { "Run"   , 1 },
+  { "Walk"  , 3 },
+  { "Mosey", 5 },
+};
+
 static int16_t random_n(int16_t n) {
   return (rand() % n);
 }
@@ -73,6 +86,14 @@ static void update_move() {
   cm = &moves[current_move];
   current_move = index_of_key(cm->successors[random_move]);
   sm = &moves[current_move];
+  
+  /*
+  APP_LOG(
+    APP_LOG_LEVEL_DEBUG, 
+    "previous_move(%s) current_move(i=%d, %s) random_move(%d) successor(%c)", 
+    cm->name, current_move, sm->name, random_move, cm->successors[random_move]
+  );
+  */
     
   if (s_rotation != NULL) {
     gbitmap_destroy(s_rotation);  
@@ -82,33 +103,6 @@ static void update_move() {
   bitmap_layer_set_bitmap(s_background_layer, s_rotation);
   text_layer_set_text(s_move_name_layer, sm->name);
   interval_counter = interval;
-}
-
-static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-  if (interval == 0) {
-    return;
-  } else {
-    interval--;
-  }
-  update_move();
-}
-
-static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-  if (pause) {
-    pause = false;
-  } else {
-    pause = true;
-  }
-}
-
-static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-  interval++;
-}
-
-static void click_config_provider(void *context) {
-  window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
-  window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
-  window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
 }
 
 static void main_window_load(Window *window) {
@@ -156,7 +150,6 @@ static void init() {
     .load = main_window_load,
     .unload = main_window_unload
   });
-  window_set_click_config_provider(s_main_window, click_config_provider); 
   window_set_background_color(s_main_window, GColorBlack);
   window_stack_push(s_main_window, true);
   update_move();
@@ -165,7 +158,6 @@ static void init() {
 
 static void deinit() {
   window_destroy(s_main_window);
-  
 }
 
 int main(void) {

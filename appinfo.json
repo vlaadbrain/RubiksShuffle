@@ -4,7 +4,7 @@
         ""
     ],
     "companyName": "org.cjt",
-    "longName": "Shuffle Your Rubiks Cube",
+    "longName": "Rubiks Shuffle",
     "projectType": "native",
     "resources": {
         "media": [
@@ -16,7 +16,7 @@
         ]
     },
     "sdkVersion": "2",
-    "shortName": "Shuffle",
+    "shortName": "Rubiks Shuffle",
     "uuid": "71f8a99e-9281-43ae-8479-794910879271",
     "versionCode": 1,
     "versionLabel": "1.2",
