@@ -11,6 +11,12 @@
  * - the back button exits
  *
  * the pseudo-random number generator is seeded at initialization.
+ *
+ *****
+ * TODOS: 
+ *   - persist speed interval
+ *   - introduce menu layer for speed selection
+ *   - cleanup a little
  */
 
 #include <pebble.h>
@@ -143,8 +149,10 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 static void init() {
+  /* init random moves */
   srand(time(NULL));
   current_move = random_n(MOVES_AVAILABLE);
+  /* init main window */
   s_main_window = window_create();
   window_set_window_handlers(s_main_window, (WindowHandlers) {
     .load = main_window_load,
@@ -152,7 +160,11 @@ static void init() {
   });
   window_set_background_color(s_main_window, GColorBlack);
   window_stack_push(s_main_window, true);
+  
+  /* generate initial move */
   update_move();
+  
+  /* subscribe callback for update_move */
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
 }
 
